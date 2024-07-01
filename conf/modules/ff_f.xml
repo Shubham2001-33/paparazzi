@@ -1,0 +1,23 @@
+<!DOCTYPE module SYSTEM "module.dtd">
+
+<module name="ff_f">
+  <doc>
+    <description>
+      Guidance and Navigation controller for rotorcraft using INDI and setpoint algorithm
+    </description>
+  </doc>
+  <header>
+    <file name="ff_f.h"/>
+  </header>
+  <init fun="ff_f_init()"/>
+  <periodic fun="ff_f_run()" freq="500" start="ff_f_start()"
+		    stop="ff_f_stop()" autorun="FALSE"/>
+  <event fun="ff_f_event()"/>
+  <datalink message="FORMATION_SP_to_follower" fun="ff_parse_FORMATION_SP(buf)"/>
+  <makefile target="ap|nps">
+    <configure name="MODEM_DEV" default="UDP0" case="upper|lower"/>
+    <file name="ff_f.c"/>
+    <file name="pprz_transport.c" dir="pprzlink/src"/>
+    <define name="DOWNLINK_DEVICE" value="$(MODEM_DEV_LOWER)"/>
+  </makefile>
+</module>

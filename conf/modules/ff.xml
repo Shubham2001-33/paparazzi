@@ -1,0 +1,21 @@
+<!DOCTYPE module SYSTEM "module.dtd">
+
+<module name="ff">
+  <doc>
+    <description>
+      Leader side formation setpoint computation 
+    </description>
+  </doc>
+  <header>
+    <file name="ff.h"/>
+  </header>
+  <init fun="ff_init()"/>
+  <periodic fun="ff_run()" freq="500" start="ff_start()"
+		    stop="ff_stop()" autorun="FALSE"/>
+  <makefile target="ap|nps">
+    <configure name="MODEM_DEV" default="UDP0" case="upper|lower"/>
+    <file name="ff.c"/>
+    <file name="pprz_transport.c" dir="pprzlink/src"/>
+    <define name="DOWNLINK_DEVICE" value="$(MODEM_DEV_LOWER)"/>
+  </makefile>
+</module>

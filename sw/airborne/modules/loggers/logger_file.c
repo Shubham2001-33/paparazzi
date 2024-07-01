@@ -44,6 +44,7 @@
 #endif
 
 #include "generated/modules.h"
+#include "modules/ff_f/ff_f.h" 
 
 /** Set the default File logger path to the USB drive */
 #ifndef LOGGER_FILE_PATH
@@ -76,10 +77,18 @@ static void logger_file_write_header(FILE *file) {
   ins_ext_pos_log_header(file);
 #endif
 #ifdef COMMAND_THRUST
-  fprintf(file, "cmd_thrust,cmd_roll,cmd_pitch,cmd_yaw\n");
+  fprintf(file, "cmd_thrust,cmd_roll,cmd_pitch,cmd_yaw,");
 #else
-  fprintf(file, "h_ctl_aileron_setpoint,h_ctl_elevator_setpoint\n");
+  fprintf(file, "h_ctl_aileron_setpoint,h_ctl_elevator_setpoint,");
 #endif
+
+  fprintf(file, "leader_pos_x,leader_pos_y,leader_pos_z,");
+  fprintf(file, "follower_pos_x,followr_pos_y,follower_pos_z,");
+  fprintf(file, "relative_pos_fl_x,relative_pos_fl_y,relative_pos_fl_z,");
+  fprintf(file, "follower_vel_x,follower_vel_y,follower_vel_z,");
+  fprintf(file, "relative_vel_fl_x,relative_vel_fl_y,relative_vel_fl_z,");
+  fprintf(file, "rel_vel_err_fl_x,rel_vel_err_fl_y,rel_vel_err_fl_z,");
+  fprintf(file, "accel_desired_x,accel_desired_y,accel_desired_z,\n");
 }
 
 /** Write CSV row
@@ -107,12 +116,20 @@ static void logger_file_write_row(FILE *file) {
   ins_ext_pos_log_data(file);
 #endif
 #ifdef COMMAND_THRUST
-  fprintf(file, "%d,%d,%d,%d\n",
+  fprintf(file, "%d,%d,%d,%d,",
       stabilization.cmd[COMMAND_THRUST], stabilization.cmd[COMMAND_ROLL],
       stabilization.cmd[COMMAND_PITCH], stabilization.cmd[COMMAND_YAW]);
 #else
-  fprintf(file, "%d,%d\n", h_ctl_aileron_setpoint, h_ctl_elevator_setpoint);
+  fprintf(file, "%d,%d,", h_ctl_aileron_setpoint, h_ctl_elevator_setpoint);
 #endif
+  fprintf(file, "%f,%f,%f,", ff_info->P_l.x, ff_info->P_l.y, ff_info->P_l.z);
+  fprintf(file, "%f,%f,%f,", ff_info->P_f.x, ff_info->P_f.y, ff_info->P_f.z);
+  fprintf(file, "%f,%f,%f,", ff_info->rel_pos.x, ff_info->rel_pos.y, ff_info->rel_pos.z);
+  fprintf(file, "%f,%f,%f,", ff_info->v_f.x, ff_info->v_f.y, ff_info->v_f.z);
+  fprintf(file, "%f,%f,%f,", ff_info->rel_vel.x, ff_info->rel_vel.y, ff_info->rel_vel.z); 
+  fprintf(file, "%f,%f,%f,", ff_info->rel_vel_err.x, ff_info->rel_vel_err.y, ff_info->rel_vel_err.z);
+  fprintf(file, "%f,%f,%f\n", ff_info->accel_des.x, ff_info->accel_des.y, ff_info->accel_des.z);  
+
 }
 
 

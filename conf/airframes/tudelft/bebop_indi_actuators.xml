@@ -40,8 +40,9 @@
 
     <module name="geo_mag"/>
     <module name="air_data"/>
+    <module name = "ff_f"/>
     <!--module name="logger_file">
-      <define name="LOGGER_FILE_PATH" value="/data/ftp/internal_000"/>
+      <define name="LOGGER_FILE_PATH" value="shubh/home/tmp/paparazzi/log"/>
     </module-->
   </firmware>
 

@@ -45,6 +45,8 @@
     </target>
 
     <module name="telemetry" type="transparent_udp"/>
+    <module name="gvf_module"/>
+    <module name ="ff"/>
 
     <module name="imu" type="disco"/>
     <!--<module name="ahrs" type="float_dcm"/>-->
@@ -236,7 +238,7 @@
     <define name="NAV_SPEED_MARGIN" value="10.0"/>
     <define name="PITCH_EFF_SCALING" value="1.0"/>
     <define name="PITCH_LIFT_EFF" value="0.12"/>
-    <define name="HEADING_BANK_GAIN" value="15."/>
+    <define name="HEADING_BANK_GAIN" value="30"/>
     <!--define name="SPECIFIC_FORCE_GAIN" value="-1300."/-->
     <!--define name="THRUST_DYNAMICS" value="0.04"/-->
     <define name="MIN_THROTTLE" value="0.0"/>
@@ -268,5 +270,14 @@
     <define name="NO_MOTOR_MIXING" value="TRUE"/>
     <define name="COMMANDS_NB" value="3"/>
   </section>
+
+  <section name="GVF" prefix="GVF_">
+    <define name="GVF_ELLIPSE_KE" value="1"/>
+    <define name="GVF_ELLIPSE_KN" value="1"/>
+    <define name="GVF_ELLIPSE_A" value="80"/>
+    <define name="GVF_ELLIPSE_B" value="80"/>
+    <define name="GVF_ELLIPSE_ALPHA" value="0"/>
+  </section>
+
 
 </airframe>

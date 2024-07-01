@@ -64,8 +64,10 @@ float guidance_indi_speed_gain = 1.8;
 #define GUIDANCE_INDI_ACCEL_SP_ID ABI_BROADCAST
 #endif
 abi_event accel_sp_ev;
-static void accel_sp_cb(uint8_t sender_id, uint8_t flag, struct FloatVect3 *accel_sp);
+static void accel_sp_cb(uint8_t sender_id, uint8_t flag, struct FloatVect3 *accel_sp, float heading_sp);
+//static void accel_sp_cb(uint8_t sender_id, uint8_t flag, struct FloatVect3 *accel_sp);
 struct FloatVect3 indi_accel_sp = {0.0f, 0.0f, 0.0f};
+float heading_setp = 0.0;
 bool indi_accel_sp_set_2d = false;
 bool indi_accel_sp_set_3d = false;
 
@@ -118,6 +120,7 @@ float guidance_indi_max_bank = GUIDANCE_H_MAX_BANK;
 
 float time_of_accel_sp_2d = 0.0;
 float time_of_accel_sp_3d = 0.0;
+float heading_sp = 0.0;
 
 struct FloatEulers guidance_euler_cmd;
 struct ThrustSetpoint thrust_sp;
@@ -227,6 +230,7 @@ struct StabilizationSetpoint guidance_indi_run(struct FloatVect3 *accel_sp, floa
     sp_accel.x = indi_accel_sp.x;
     sp_accel.y = indi_accel_sp.y;
     sp_accel.z = indi_accel_sp.z;
+    heading_setp = heading_sp;
     float dt = get_sys_time_float() - time_of_accel_sp_3d;
     // If the input command is not updated after a timeout, switch back to flight plan control
     if (dt > 0.5) {
@@ -302,7 +306,8 @@ struct StabilizationSetpoint guidance_indi_run(struct FloatVect3 *accel_sp, floa
 
   //Bound euler angles to prevent flipping
   Bound(guidance_euler_cmd.phi, -guidance_indi_max_bank, guidance_indi_max_bank);
-  Bound(guidance_euler_cmd.theta, -guidance_indi_max_bank, guidance_indi_max_bank);
+  Bound(guidance_euler_cmd.theta, -guidance_indi_max_bank, guidance_indi_max_bank); 
+  Bound(guidance_euler_cmd.psi, -guidance_indi_max_bank, guidance_indi_max_bank);
 
   //set the quat setpoint with the calculated roll and pitch
   struct FloatQuat q_sp;
@@ -456,7 +461,7 @@ UNUSED void guidance_indi_calcG(struct FloatMat33 *Gmat)
  * ABI callback that obtains the acceleration setpoint from telemetry
  * flag: 0 -> 2D, 1 -> 3D
  */
-static void accel_sp_cb(uint8_t sender_id __attribute__((unused)), uint8_t flag, struct FloatVect3 *accel_sp)
+static void accel_sp_cb(uint8_t sender_id __attribute__((unused)), uint8_t flag, struct FloatVect3 *accel_sp, float heading_sp)
 {
   if (flag == 0) {
     indi_accel_sp.x = accel_sp->x;
@@ -467,6 +472,7 @@ static void accel_sp_cb(uint8_t sender_id __attribute__((unused)), uint8_t flag,
     indi_accel_sp.x = accel_sp->x;
     indi_accel_sp.y = accel_sp->y;
     indi_accel_sp.z = accel_sp->z;
+    heading_setp = heading_sp;
     indi_accel_sp_set_3d = true;
     time_of_accel_sp_3d = get_sys_time_float();
   }

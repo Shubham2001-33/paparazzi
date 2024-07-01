@@ -12,6 +12,7 @@
     <target name="nps" board="pc">
       <define name="STABILIZATION_INDI_G2_R" value="0.0"/>
       <module name="fdm" type="jsbsim"/>
+      <define name="LOGGER_FILE_PATH" value="yamac/home/tmp/paparazzi/log"/>
       <module name="udp"/>
     </target>
 
@@ -34,13 +35,13 @@
     <module name="guidance" type="indi">
       <define name="GUIDANCE_INDI_SPECIFIC_FORCE_GAIN" value="-500.0"/>
     </module>
-
+    <!--module name = "ff_f"/-->
 
     <module name="geo_mag"/>
     <module name="air_data"/>
-    <module name="logger_file">
+    <!--module name="logger_file">
       <define name="LOGGER_FILE_PATH" value="/data/ftp/internal_000"/>
-    </module>
+    </module-->
 
     <module name="preflight_checks"/>
   </firmware>
@@ -169,7 +170,7 @@
     <define name="HOVER_KP" value="283"/>
     <define name="HOVER_KD" value="82"/>
     <define name="HOVER_KI" value="20"/>
-    <define name="NOMINAL_HOVER_THROTTLE" value="0.655"/>
+    <define name="NOMINAL_HOVER_THROTTLE" value="0.2"/>
     <define name="ADAPT_THROTTLE_ENABLED" value="TRUE"/>
   </section>
 

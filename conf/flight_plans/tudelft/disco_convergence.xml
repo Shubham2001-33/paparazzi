@@ -1,6 +1,15 @@
 <!DOCTYPE flight_plan SYSTEM "../flight_plan.dtd">
 
 <flight_plan alt="70" ground_alt="0" lat0="52.1682089" lon0="4.4128499" max_dist_from_home="500" name="Altura fp Valkenburg" security_height="30">
+<header>
+    #include "modules/datalink/datalink.h"
+    #include "modules/energy/electrical.h"
+    #include "modules/radio_control/radio_control.h"
+    #include "modules/ahrs/ahrs.h"
+    #include "modules/ff/ff.h"
+    #include "modules/loggers/logger_file.h"
+</header>
+
   <waypoints>
     <waypoint name="HOME" x="0.0" y="0.0"/>
     <waypoint name="CLIMB" x="26.6" y="23.2"/>
@@ -27,6 +36,17 @@
       <corner name="GF4"/>
     </sector>
   </sectors>
+  <variables>
+    <variable var="angle_ps" init="0" min="-180" max="179" step="1"/>
+    <variable init="0" max="100" min="0" step="5" var="ell_delta"/>
+    <variable var="followstart" init="true" type="bool"/>
+  </variables>
+
+  <modules>
+  	<module name="ff"/>
+  </modules>
+ 
+  
   <exceptions>
     <exception cond="Or(!InsideGeofence(GetPosX(), GetPosY()), GetPosAlt() @GT GetAltRef() + 1500) @AND
     !(nav_block @LEQ IndexOfBlock('Holding point'))" deroute="ReturnStbyNoThrottle"/>
@@ -37,11 +57,32 @@
     !(nav_block @LEQ IndexOfBlock('Holding point')) @AND
     !(nav_block == IndexOfBlock('Standby'))" deroute="route"/>
   </exceptions>
+  
   <blocks>
     <block name="Wait GPS">
       <set value="true" var="force_forward"/>
       <call_once fun="NavKillThrottle()"/>
       <while cond="!GpsFixValid()"/>
+    </block>
+    <block name='Circle p1' strip_button="Circle">
+      <set value="true" var="force_forward"/>
+      <call_once fun="ff_start()"/>
+      <exception cond="!followstart" deroute="STOP"/>
+      <while>
+        <circle radius= "60" wp="p1"/>
+        <call fun="ff_run"/>
+      </while>
+      
+    </block>
+  
+    <block name="STOP">
+      <call_once fun="ff_stop()"/> 
+      <stay wp="STDBY"/>
+    </block>
+
+    <block name="ellipse">
+      <set value="true" var="force_forward"/>
+      <call fun="gvf_ellipse_wp(WP_p5, gvf_ellipse_par.a, gvf_ellipse_par.b, gvf_ellipse_par.alpha)"/>
     </block>
     <block name="Geo init">
       <set value="true" var="force_forward"/>
